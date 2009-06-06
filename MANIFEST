@@ -1,0 +1,6 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Algorithm-BIT.t
+lib/Algorithm/BIT.pm
