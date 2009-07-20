@@ -37,4 +37,3 @@ is $bit->cumul(13), 19;
 is $bit->cumul(14), 19;
 is $bit->cumul(15), 19;
 is $bit->cumul(16), 19;
-is $bit->cumul(17), 20;

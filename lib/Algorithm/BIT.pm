@@ -53,7 +53,7 @@ sub update {
     my ($self, $idx, $v) = @_;
     my $size = @$self;
     if ($idx > 0) {
-        while ($idx <= $size) {
+        while ($idx < $size) {
             $self->[$idx] += $v;
             $idx += ($idx & -$idx);
         }
