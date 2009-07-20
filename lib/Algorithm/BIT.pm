@@ -4,9 +4,10 @@ use warnings;
 use integer;
 
 use Carp qw/croak/;
+use Params::Validate qw/validate_pos/;
 
 sub new {
-    my ($class, $n) = @_;
+    my ($class, $n) = validate_pos(@_, 1, 1);
     my $self = bless [], $class;
     for (my $i = 0; $i < $n; $i++) {
         $self->[$i] = 0;
@@ -14,7 +15,7 @@ sub new {
     return $self;
 }
 
-sub read {
+sub cumul {
     my ($self, $idx) = @_;
 
     if ($idx > @$self) {
@@ -22,20 +23,42 @@ sub read {
     }
 
     my $sum = 0;
-    while ($idx > 0) {
-        $sum += $self->[$idx];
-        $idx = $idx & $idx - 1;
+    if ($idx > 0) {
+        $sum = $self->[0];
+        $idx--;
+        while ($idx > 0) {
+            $sum += $self->[$idx];
+            $idx = $idx & $idx - 1;
+        }
     }
 
     return $sum;
 }
 
+sub freq {
+    my ($self, $idx) = @_;
+    my $v = $self->[$idx];
+    if ($idx > 0 and $idx & 1 == 0) {
+        my $p = $idx & $idx - 1;
+        $idx--;
+        while ($idx != $p) {
+            $v -= $self->[$idx];
+            $idx = $idx & $idx - 1;
+        }
+    }
+    return $v;
+}
+
 sub update {
-    my ($self, $idx, $val) = @_;
-    my $max = @$self;
-    while ($idx <= $max) {
-        $self->[$idx] += $val;
-        $idx += ($idx & -$idx);
+    my ($self, $idx, $v) = @_;
+    my $size = @$self;
+    if ($idx > 0) {
+        while ($idx <= $size) {
+            $self->[$idx] += $v;
+            $idx += ($idx & -$idx);
+        }
+    } else {
+        $self->[$idx] += $v;
     }
 }
 
