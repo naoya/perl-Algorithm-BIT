@@ -14,6 +14,10 @@ sub new {
     return $self;
 }
 
+sub sum {
+    $_[0]->cumul(scalar @{$_[0]});
+}
+
 sub cumul {
     my ($self, $i) = @_;
 
