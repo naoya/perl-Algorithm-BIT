@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use integer;
 
-use Carp qw/croak/;
 use Params::Validate qw/validate_pos/;
 
 sub new {
@@ -16,19 +15,15 @@ sub new {
 }
 
 sub cumul {
-    my ($self, $idx) = @_;
-
-    if ($idx > @$self) {
-        croak 'assert: index overflow';
-    }
+    my ($self, $i) = @_;
 
     my $sum = 0;
-    if ($idx > 0) {
+    if ($i > 0) {
         $sum = $self->[0];
-        $idx--;
-        while ($idx > 0) {
-            $sum += $self->[$idx];
-            $idx = $idx & $idx - 1;
+        $i--;
+        while ($i > 0) {
+            $sum += $self->[$i];
+            $i = $i & $i - 1;
         }
     }
 
@@ -36,30 +31,58 @@ sub cumul {
 }
 
 sub freq {
-    my ($self, $idx) = @_;
-    my $v = $self->[$idx];
-    if ($idx > 0 and $idx & 1 == 0) {
-        my $p = $idx & $idx - 1;
-        $idx--;
-        while ($idx != $p) {
-            $v -= $self->[$idx];
-            $idx = $idx & $idx - 1;
+    my ($self, $i) = @_;
+
+    if ($i >= @$self) {
+        return;
+    }
+
+    my $v = $self->[$i];
+    if ($i > 0) {
+        my $p = $i & $i - 1;
+        $i--;
+        while ($i != $p) {
+            $v -= $self->[$i];
+            $i = $i & ($i - 1);
         }
     }
     return $v;
 }
 
 sub update {
-    my ($self, $idx, $v) = @_;
+    my ($self, $i, $v) = @_;
     my $size = @$self;
-    if ($idx > 0) {
-        while ($idx < $size) {
-            $self->[$idx] += $v;
-            $idx += ($idx & -$idx);
+    if ($i > 0) {
+        while ($i < $size) {
+            $self->[$i] += $v;
+            $i += ($i & -$i);
         }
     } else {
-        $self->[$idx] += $v;
+        $self->[0] += $v;
     }
+}
+
+sub search_index {
+    my ($self, $v) = @_;
+
+    my $c = 0;
+    my $n = 0;
+    my $size = @$self;
+
+    if ($self->[0] <= $v) {
+        my $h = $size >> 1;
+        $n = $self->[0];
+        while ($h > 0) {
+            if (($n + $self->[$c + $h]) <= $v) {
+                $n += $self->[$c + $h];
+                $c += $h;
+            }
+            $h >>= 1;
+        }
+        $c++;
+    }
+
+    return ($c, $n);
 }
 
 1;
