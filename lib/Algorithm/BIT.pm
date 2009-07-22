@@ -100,15 +100,15 @@ Algorithm::BIT - Binary Indexed Tree a.k.a Fenwick Tree
   my $bit = Algorithm::BIT->new(16); # 16 is a numbers of objects
 
   ## updating frequencies in O(lg n)
-  $bit->update(1, 2); # object#1 occuring 2 times
+  $bit->update(1, 2); # object#1 occuring 2 times more
   $bit->update(5, 1);
   $bit->update(8, 2);
 
   ## getting cumulative frequencies in O(lg n)
-  say $bit->read(1);  # 2
-  say $bit->read(2);  # 2
-  say $bit->read(5);  # 3
-  say $bit->read(10); # 5
+  say $bit->cumul(1);  # 0
+  say $bit->cumul(2);  # 2
+  say $bit->cumul(6);  # 3
+  say $bit->cumul(10); # 5
 
 =head1 DESCRIPTION
 
